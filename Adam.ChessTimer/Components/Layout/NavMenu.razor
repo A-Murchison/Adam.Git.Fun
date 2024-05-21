@@ -1,0 +1,33 @@
+﻿@using Adam.Web.Components.Dialogs
+@rendermode InteractiveServer
+@inject IDialogService _dialogService
+
+<div class="navmenu">
+    <input type="checkbox" title="Menu expand/collapse toggle" id="navmenu-toggle" class="navmenu-icon" />
+    <label for="navmenu-toggle" class="navmenu-icon"><FluentIcon Value="@(new Icons.Regular.Size20.Navigation())" Color="Color.Fill" /></label>
+    <nav class="sitenav" aria-labelledby="main-menu" onclick="document.getElementById('navmenu-toggle').click();">
+        <FluentNavMenu Id="main-menu" Collapsible="true" Width="250" Title="Navigation menu" @bind-Expanded="expanded">
+            <FluentNavLink Href="/" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.Home())" IconColor="Color.Accent">Home</FluentNavLink>
+            <FluentNavLink Href="counter" Icon="@(new Icons.Regular.Size20.NumberSymbolSquare())" IconColor="Color.Accent">Counter</FluentNavLink>
+            <FluentNavLink Href="weather" Icon="@(new Icons.Regular.Size20.WeatherPartlyCloudyDay())" IconColor="Color.Accent">Weather</FluentNavLink>
+            <FluentNavLink Href="chessTimer" Icon="@(new Icons.Regular.Size20.Chess())" IconColor="Color.Accent">Chess Timer</FluentNavLink>
+
+            <FluentNavLink OnClick="ShowSettingsAsync" Icon="@(new Icons.Regular.Size20.Cloud())" IconColor="Color.Accent">Theme</FluentNavLink>
+        </FluentNavMenu>
+    </nav>
+</div>
+
+@code {
+    private bool expanded = true;
+
+    private async Task ShowSettingsAsync()
+    {
+        await _dialogService.ShowDialogAsync<ThemeSettings>(new DialogParameters()
+            {
+                Title = "Theme Settings",
+                Modal = true,
+                PrimaryAction = "Close",
+                SecondaryAction = null
+            });
+    }
+}

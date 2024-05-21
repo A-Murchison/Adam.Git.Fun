@@ -1,0 +1,193 @@
+﻿@page "/chessTimer"
+@using Adam.Web.Components.Dialogs
+@using Adam.Web.Models.Chess
+@inject IJSRuntime js
+
+
+
+<div class="d-flex flex-column chessTimer-layout">
+    @*     <FluentLabel Style="margin: 20px 0px" Typo="Typography.H1">Chess Timer</FluentLabel>
+    *@
+
+    <Collapse Style="background-color: inherit" @ref="collapse1">
+
+        <Card Style="background-color: inherit">
+
+            <CardBody Style="background-color: inherit">
+                <div class="flex-row chessTimer-layout " style="">
+
+                    <FluentLabel Class="chessTimer-textLayout" Style="margin:5px 0px;">Bullet <FluentEmoji Value="@(new Emojis.TravelPlaces.Color.Default.Comet())" Width="16px" />  </FluentLabel>
+
+                    <FluentGrid Justify="JustifyContent.Center" Spacing="3" AdaptiveRendering="true">
+                        <FluentGridItem>
+                            <FluentButton @ref="@btn1Min" Data="btn1MinVal" OnClick="@(() => TimeSelectedBtnAsync(this.btn1Min))" Appearance="Appearance.Lightweight" Class="chessTimer-btn">@btn1MinVal.GameDurationLabel</FluentButton>
+                        </FluentGridItem>
+                        <FluentGridItem>
+                            <FluentButton @ref="@btn2MinPlus1" Data="btn2MinPlus1Val" OnClick="@(() => TimeSelectedBtnAsync(this.btn2MinPlus1))" Appearance="Appearance.Lightweight" Class="chessTimer-btn">@btn2MinPlus1Val.GameDurationLabel</FluentButton>
+                        </FluentGridItem>
+                        <FluentGridItem>
+                            <FluentButton @ref="@btn1MinPlus1" Data="btn1MinPlus1Val" OnClick="@(() => TimeSelectedBtnAsync(this.btn1MinPlus1))" Appearance="Appearance.Lightweight" Class="chessTimer-btn">@btn1MinPlus1Val.GameDurationLabel</FluentButton>
+                        </FluentGridItem>
+                    </FluentGrid>
+
+                </div>
+                <div class="flex-row" style="justify-content:center; align-items: center;">
+
+                    <FluentLabel Class="chessTimer-textLayout" Style="margin:5px 0px;">  Blitz  <FluentEmoji Value="@(new Emojis.TravelPlaces.Color.Default.Fire())" Width="16px" />  </FluentLabel>
+                    <FluentGrid Justify="JustifyContent.Center" Spacing="3" AdaptiveRendering="true">
+                        <FluentGridItem>
+                            <FluentButton @ref="@btn3Min" Data="btn3MinVal" OnClick="@(() => TimeSelectedBtnAsync(this.btn3Min))" Appearance="Appearance.Lightweight" Class="chessTimer-btn">@btn3MinVal.GameDurationLabel</FluentButton>
+                        </FluentGridItem>
+                        <FluentGridItem>
+                            <FluentButton @ref="@btn3Plus2" Data="btn3Plus2Val" OnClick="@(() => TimeSelectedBtnAsync(this.btn3Plus2))" Appearance="Appearance.Lightweight" Class="chessTimer-btn">@btn3Plus2Val.GameDurationLabel</FluentButton>
+                        </FluentGridItem>
+                        <FluentGridItem>
+                            <FluentButton @ref="@btn5Min" Data="btn5MinVal" OnClick="@(() => TimeSelectedBtnAsync(this.btn5Min))" Appearance="Appearance.Lightweight" Class="chessTimer-btn">@btn5MinVal.GameDurationLabel</FluentButton>
+                        </FluentGridItem>
+                    </FluentGrid>
+                </div>
+            </CardBody>
+        </Card>
+    </Collapse>
+    <Alert hidden="@hideAlert" Style="text-align: center; margin: 3px;" Color="AlertColor.Primary">
+        <p>Choose a time to get started!</p>
+    </Alert>
+    <div class="container">
+
+
+
+        <Button @onclick="ToggleContentAsync">
+
+            @if (!toggle)
+            {
+                <FluentIcon Icon="Icons.Filled.Size20.ArrowUp" />
+            }
+            else
+            {
+                <div class="d-flex">
+                    <FluentLabel Style="margin-left: 2px;">Set Timer</FluentLabel>
+
+                    <FluentIcon Icon="Icons.Filled.Size20.ArrowDown" />
+
+                </div>
+
+            }
+        </Button>
+        <Button @onclick="ResetOnClickAsync">
+            <div class="d-flex">
+                <FluentLabel Style="margin-right: 3px;">Reset </FluentLabel> <FluentIcon Icon="Icons.Filled.Size20.ArrowReset" />
+
+            </div>
+        </Button>
+    </div>
+
+
+    <div class="chessTimer-layout chessTimer-textLayout" style="width: 100%;">
+        <FluentLabel Style="margin: 10px 0px; " Weight="FontWeight.Bold" Typo="Typography.Header">@timeSelected.GameDurationLabel</FluentLabel>
+
+        <FluentButton Class="@timeSelected.CssClass" @ref="Timer1" OnClick="@(()=> setTimer(this.aTimer, this.bTimer, timeSelected, timeSelected2))" Style="width:100%;  min-height: 300px; margin-bottom:5px" Appearance="Appearance.Accent">
+
+            <FluentLabel Style="font-size: 30px;" Weight="FontWeight.Bold">
+                @timeSelected.CurrentTime
+            </FluentLabel>
+
+        </FluentButton>
+        <FluentSpacer />
+        <FluentButton Class="@timeSelected2.CssClass" @ref="Timer2" OnClick="@(()=> setTimer(this.bTimer, this.aTimer, timeSelected2, timeSelected))" Style="width:100%; min-height: 300px; filter: invert(100%);" Appearance="Appearance.Accent">
+            <FluentLabel Color="Color.Neutral" Style=" font-size: 30px; filter: invert(100%);" Weight="FontWeight.Bold">
+                @timeSelected2.CurrentTime
+            </FluentLabel>
+        </FluentButton>
+    </div>
+
+
+</div>
+<FluentFooter>Made to play chess with my partner <FluentIcon Icon="Icons.Filled.Size16.Heart" /> </FluentFooter>
+
+@code {
+    [SupplyParameterFromForm]
+    private ChessForm chessForm { get; set; } = new();
+
+    private FluentButton Timer1;
+    private FluentButton Timer2;
+
+    private string btnClass1;
+
+    private bool hideAlert = true;
+
+    TimeSelected timeSelected = new();
+    TimeSelected timeSelected2 = new();
+
+    #region Timer Elements
+    private FluentButton? btn1Min;
+    private TimeSelected btn1MinVal = new TimeSelected()
+        {
+            GameDurationLabel = "1 min",
+            GameDuration = 60
+        };
+
+
+    private FluentButton? btn1MinPlus1;
+    private TimeSelected btn1MinPlus1Val = new TimeSelected()
+        {
+            GameDurationLabel = "1|1",
+            GameDuration = 5,
+            TurnTimeIncrement = 1
+        };
+
+    private FluentButton? btn2MinPlus1;
+    private TimeSelected btn2MinPlus1Val = new TimeSelected()
+        {
+            GameDurationLabel = "2|1",
+            GameDuration = 120,
+            TurnTimeIncrement = 1
+        };
+
+    private FluentButton? btn3Min;
+    private TimeSelected btn3MinVal = new TimeSelected()
+        {
+            GameDurationLabel = "3 min",
+            GameDuration = 180
+        };
+
+    private FluentButton? btn3Plus2;
+    private TimeSelected btn3Plus2Val = new TimeSelected()
+        {
+            GameDurationLabel = "3|2",
+            GameDuration = 180,
+            TurnTimeIncrement = 2
+        };
+
+    private FluentButton? btn5Min;
+    private TimeSelected btn5MinVal = new TimeSelected()
+        {
+            GameDurationLabel = "5 min",
+            GameDuration = 300
+        };
+    #endregion
+
+
+    protected System.Timers.Timer aTimer = new System.Timers.Timer(100);
+    protected System.Timers.Timer bTimer = new System.Timers.Timer(100);
+
+    protected override Task OnInitializedAsync()
+    {
+        aTimer.Elapsed += (sender, e) => OnTimedEvent((System.Timers.Timer)sender, e, ref timeSelected);
+        bTimer.Elapsed += (sender, e) => OnTimedEvent((System.Timers.Timer)sender, e, ref timeSelected2);
+
+
+        return base.OnInitializedAsync();
+    }
+
+    protected override async Task<Task> OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await ToggleContentAsync();
+        }
+
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+
+}

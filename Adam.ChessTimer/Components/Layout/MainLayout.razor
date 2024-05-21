@@ -1,0 +1,55 @@
+﻿@using Adam.Web.Components.Dialogs
+@inherits LayoutComponentBase
+@inject IDialogService _dialogService;
+
+
+
+<FluentLayout>
+    <FluentHeader>
+        Adam home
+        <FluentEmoji Value="@(new Emojis.FoodDrink.Color.Default.Pizza())" />
+        <FluentSpacer />
+        <FluentIcon Color="@Color.Lightweight" Value="@(new Icons.Regular.Size24.Cloud())" OnClick="@ShowSettingsAsync" />
+    </FluentHeader>
+    <FluentStack Class="main" Orientation="Microsoft.FluentUI.AspNetCore.Components.Orientation.Horizontal" Width="100%">
+        <NavMenu />
+        <FluentBodyContent Class="body-content">
+            <div class="content">
+                @Body
+            </div>
+        </FluentBodyContent>
+    </FluentStack>
+    <FluentFooter>
+
+        <FluentSpacer />
+        <FluentLabel>
+            Created by Adam Murchison
+        </FluentLabel>
+    </FluentFooter>
+</FluentLayout>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+
+<FluentToastProvider />
+<FluentDialogProvider />
+<FluentTooltipProvider />
+<FluentMessageBarProvider />
+
+@code {
+
+    private async Task ShowSettingsAsync()
+    {
+        await _dialogService.ShowPanelAsync<ThemeSettings>(new DialogParameters()
+            {
+                Title = "Theme Settings",
+                Alignment = HorizontalAlignment.Right,
+                PrimaryAction = "Close",
+                SecondaryAction = null
+            });
+    }
+}
