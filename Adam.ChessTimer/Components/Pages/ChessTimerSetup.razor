@@ -131,7 +131,7 @@
     private TimeSelected btn1MinPlus1Val = new TimeSelected()
         {
             GameDurationLabel = "1|1",
-            GameDuration = 5,
+            GameDuration = 60,
             TurnTimeIncrement = 1
         };
 
@@ -167,8 +167,8 @@
     #endregion
 
 
-    protected System.Timers.Timer aTimer = new System.Timers.Timer(100);
-    protected System.Timers.Timer bTimer = new System.Timers.Timer(100);
+    protected System.Timers.Timer aTimer = new System.Timers.Timer(10);
+    protected System.Timers.Timer bTimer = new System.Timers.Timer(10);
 
     protected override Task OnInitializedAsync()
     {

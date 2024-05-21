@@ -85,7 +85,7 @@ namespace Adam.Web.Components.Pages
 
         private void OnTimedEvent(System.Timers.Timer sender, EventArgs e, ref TimeSelected time)
         {
-            time.GameDuration -= 0.1;
+            time.GameDuration -= 0.01;
 
             if (time.GameDuration <= 0)
             {
