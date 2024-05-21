@@ -1,5 +1,5 @@
 # What?
-- .NET Core project that has random stuff in it that I'll incrementally update. 
+- .NET Core 8.0 project that has random stuff in it that I'll incrementally update. 
 
 # Why?
 - I sometimes want to build things for fun.
